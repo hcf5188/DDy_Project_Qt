@@ -19,6 +19,7 @@ SOURCES += \
     clearwin.cpp \
     configwin.cpp \
     detailinfowin.cpp \
+    dialog_newuser.cpp \
     kongbai.cpp \
     main.cpp \
     ddylogin.cpp \
@@ -33,6 +34,7 @@ HEADERS += \
     configwin.h \
     ddylogin.h \
     detailinfowin.h \
+    dialog_newuser.h \
     kongbai.h \
     operawin.h \
     shiyanwin.h \
@@ -45,6 +47,7 @@ FORMS += \
     configwin.ui \
     ddylogin.ui \
     detailinfowin.ui \
+    dialog_newuser.ui \
     kongbai.ui \
     operawin.ui \
     shiyanwin.ui \

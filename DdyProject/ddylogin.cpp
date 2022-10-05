@@ -112,12 +112,14 @@ void DdyLogin::on_Loginbt_clicked()
         QString userp = query.value("password").toString();
         qDebug()<< query.value("username").toString();
         qDebug()<< query.value("password").toString();
+
         if(userp.compare(ui->passwordte->toPlainText ()) != 0)
         {
             ui->tips->setText("密码不正确，请重新输入");
             ui->passwordte->setText("");
             return;
         }
+
         if(g_userinfo.usertType != query.value("usertype").toInt())
         {
             ui->tips->setText("用户类型不匹配");
