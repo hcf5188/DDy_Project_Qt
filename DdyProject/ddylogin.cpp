@@ -21,8 +21,8 @@ DdyLogin::DdyLogin(QWidget *parent)
     qDebug()<<db.open();
 
     operaWinShow = new OperaWin(this);
-    ui->Opera->setChecked(true);
-    g_userinfo.usertType = 3;
+    ui->Supor->setChecked(true);
+    g_userinfo.usertType = 2;
     g_userinfo.userName = "";
     g_userinfo.password = "";
     g_userinfo.delFlag = false;
@@ -38,23 +38,14 @@ DdyLogin::DdyLogin(QWidget *parent)
                 "password varchar(20) not null,"
                 "delete_flag int not null,"
                 "creat_date text not null)");   //执行SQL语句
-    qDebug()<<query.exec("create table if not exists clearinfo("
+    qDebug()<<query.exec("create table if not exists AllOperaInfo("
                 "userid INTEGER,"
                 "upid int,"
-                "clrinfo text not null,"
+                "infoType text not null,"
+                "OperaInfo text not null,"
                 "date text not null)");         //执行SQL语句
-    qDebug()<<query.exec("create table if not exists operationinfo("
-                "userid INTEGER,"
-                "upid int,"
-                "operinfo text not null,"
-                "date text not null)");         //执行SQL语句
-    qDebug()<<query.exec("create table if not exists configinfo("
-                "userid INTEGER,"
-                "upid int,"
-                "cfginfo text not null,"
-                "date text not null)");         //执行SQL语句
-//    QDateTime time = QDateTime::currentDateTime();
-//    QString str1 = time.toString("yyyy-MM-dd hh:mm:ss");//转换成字符串
+
+
 //    qDebug()<<str1;
 //    curDataTime.toString("yyyy-MM-dd hh:mm:ss")
 //    qDebug()<<query.exec("insert into userlist(upid,usertype,username,password,delete_flag,creat_date) values(0,0,'张三','023456',0,'000')");
@@ -64,7 +55,9 @@ DdyLogin::DdyLogin(QWidget *parent)
 
     if(!query.next())
     {
-        qDebug()<<query.exec("insert into userlist(upid,usertype,username,password,delete_flag,creat_date) values(NULL,1,'admin','123456',0,'2022.10.10 00:00:00')");
+        QDateTime time = QDateTime::currentDateTime();
+        QString str11 = time.toString("yyyy-MM-dd hh:mm:ss");//转换成字符串
+        query.exec(QString("insert into userlist(upid,usertype,username,password,delete_flag,creat_date) values(NULL,1,'admin','123456',0,'%1')").arg(str11));
         qDebug()<<"admin create OK!";
     }
     else
@@ -72,7 +65,7 @@ DdyLogin::DdyLogin(QWidget *parent)
         qDebug()<<"admin has already exsits!";
     }
 
-    //sqlque.exec("insert into userinformation(u,p) value(\"张三\",\"123\")");
+
 }
 
 DdyLogin::~DdyLogin()

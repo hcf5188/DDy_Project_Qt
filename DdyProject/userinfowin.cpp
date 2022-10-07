@@ -136,11 +136,43 @@ void userinfoWin::RefreshUserInfo()
     int u8_index = RowNum;
     while(query.next())
     {
-        if(!query.value("delete_flag").toBool())
+        QString usertype;
+        QString upName;
+        if(!query.value("delete_flag").toBool())//员工是否被删除
         {   //添加
+            switch(query.value("usertype").toInt())
+            {
+            case 1:
+                usertype = QString("管理员");
+                break;
+            case 2:
+                usertype = QString("主管");
+                break;
+            case 3:
+                usertype = QString("实验员");
+                break;
+            default:
+                usertype = QString("类型错误");
+                break;
+            }
             ui->tableWidget->setItem((u8_index - RowNum),0,new QTableWidgetItem(query.value("username").toString()));
-            ui->tableWidget->setItem((u8_index - RowNum),1,new QTableWidgetItem(QString::number(query.value("usertype").toInt(), 10)));
-            ui->tableWidget->setItem((u8_index - RowNum),2,new QTableWidgetItem(QString::number(query.value("upid").toInt(), 10)));
+            ui->tableWidget->setItem((u8_index - RowNum),1,new QTableWidgetItem(usertype));
+
+            if(query.value("usertype").toInt() == 1 || query.value("usertype").toInt() == 2)
+            {
+                 ui->tableWidget->setItem((u8_index - RowNum),2,new QTableWidgetItem("管理员"));
+            }
+            else
+            {
+                QString supids = QString("select * from userlist where userid = %1").arg(query.value("upid").toInt());
+                QSqlQuery query11;
+                qDebug()<<query11.exec(supids);
+                while(query11.next())
+                {
+                    ui->tableWidget->setItem((u8_index - RowNum),2,new QTableWidgetItem(query11.value("username").toString()));
+                    break;
+                }
+            }
             ui->tableWidget->setItem((u8_index - RowNum),3,new QTableWidgetItem(query.value("creat_date").toString()));
             RowNum--;
         }
@@ -207,7 +239,17 @@ void userinfoWin::on_DelUser_clicked()
         {
             QString delInfo = QString("update userlist set delete_flag= true where username='%1'").arg(text);
             QSqlQuery query;
-            qDebug()<<query.exec(delInfo);
+            query.exec(delInfo);
+            delInfo = QString("select * from userlist where username='%1'").arg(text);
+            query.exec(delInfo);
+            int upid;
+            if(query.next())
+            {
+                upid = query.value("userid").toInt();
+                delInfo = QString("update userlist set delete_flag= true where upid= %1").arg(upid);
+                QSqlQuery query1;
+                query1.exec(delInfo);
+            }
             RefreshUserInfo();
         }
     }
@@ -255,13 +297,13 @@ void userinfoWin::on_updatePsw_clicked()
 void userinfoWin::on_New_clicked()
 {
     int result = dn->exec();
-    if(result == QDialog::Accepted)
-    {
-        qDebug()<<"acceppt it";               //点击取消按钮走这里
-    } else if( result == QDialog::Rejected)
-    {
-        qDebug()<<"reject";               //点击取消按钮走这里
-    }
+//    if(result == QDialog::Accepted)
+//    {
+//        qDebug()<<"acceppt it";           //点击OK按钮走这里
+//    } else if( result == QDialog::Rejected)
+//    {
+//        qDebug()<<"reject";               //点击取消按钮走这里
+//    }
 
 }
 void userinfoWin::AddNewUser(QString username,QString psw1,QString psw2)
@@ -287,8 +329,7 @@ void userinfoWin::AddNewUser(QString username,QString psw1,QString psw2)
         return;
     }
     QDateTime current_date_time = QDateTime::currentDateTime();
-    QString current_date = current_date_time.toString("yyyy-MM-dd hh:mm:ss.zzz");
-//"insert into userlist(upid,usertype,username,password,delete_flag,creat_date) values(NULL,1,'admin','123456',0,'2022.10.10 00:00:00')");
+    QString current_date = current_date_time.toString("yyyy-MM-dd hh:mm:ss");
     QString newUser = QString("insert into userlist(upid,usertype,username,password,delete_flag,creat_date) "
                               "values(%1,%2,'%3','%4',0,'%5')")
                                 .arg(g_userinfo.userId)

@@ -19,4 +19,7 @@ void Dialog_NewUser::on_buttonBox_accepted()
     QString password1 = ui->psw1->toPlainText ();
     QString password2 = ui->psw2->toPlainText ();
     emit sendData(username,password1,password2);  //发送信号给mainwindow
+    ui->username->clear();
+    ui->psw1->clear();
+    ui->psw2->clear();
 }
